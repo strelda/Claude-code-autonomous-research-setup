@@ -136,6 +136,22 @@ Saves PDF to `refs/`.
 
 ---
 
+## Observability
+
+**aleksblago/claude-code-observability** for live session debugging. Reads native Claude Code session files — shows prompts, tool I/O, agent swim lanes, HITL alerts.
+
+```bash
+# From cloned repo at /tmp/claude-code-observability
+./manage.sh start-detached   # dashboard: http://localhost:52871
+./manage.sh stop
+```
+
+Hooks must be configured via `./setup.sh` — adds PreToolUse, PostToolUse, Stop, SubagentStop to `~/.claude/settings.json`.
+
+**ADR:** See `docs/ADR/001-observability-tool-selection.md` for why Phoenix and others were rejected.
+
+---
+
 ## Conventions
 
 - **Equations**: LaTeX in Markdown files (inline `$...$`, display `$$...$$`). Stored in `math/`.

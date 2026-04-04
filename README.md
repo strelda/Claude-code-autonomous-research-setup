@@ -64,6 +64,29 @@ If FATAL+HIGH not decreasing after 3 cycles → stop and reconsider approach.
 4. Resume from where you left off
 ```
 
+## Setup
+
+```bash
+pip install -e .
+```
+
+## Observability
+
+**aleksblago/claude-code-observability** — reads native Claude Code session files. Shows prompts, tool I/O, agent swim lanes, HITL alerts.
+
+```bash
+# Start/stop (from cloned repo at /tmp/claude-code-observability)
+./manage.sh start-detached   # dashboard: http://localhost:52871
+./manage.sh stop
+
+# Or use the slash command:
+# /Observability on
+```
+
+Hooks must be configured in `~/.claude/settings.json` for PreToolUse, PostToolUse, Stop, SubagentStop — see the [aleksblago setup guide](https://github.com/aleksblago/claude-code-observability) (`./setup.sh`).
+
+See `docs/ADR/001-observability-tool-selection.md` for why other tools were rejected.
+
 ## Key commands
 
 ```bash
