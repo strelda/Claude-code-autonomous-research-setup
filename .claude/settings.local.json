@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(gemini *)",
+      "Bash(bash src/scripts/*)",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(wc *)",
+      "mcp__claude_ai_Scite__search_literature",
+      "mcp__claude_ai_bioRxiv__search_preprints",
+      "mcp__claude_ai_bioRxiv__get_preprint",
+      "mcp__claude_ai_bioRxiv__get_categories",
+      "mcp__claude_ai_bioRxiv__search_published_preprints"
+    ],
+    "deny": []
+  }
+}
