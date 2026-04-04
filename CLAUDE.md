@@ -18,15 +18,14 @@
 ├── README.md               # Quick-reference workflow guide
 ├── directions/             # Phase 1 output — one subfolder per brainstormed direction
 │   ├── option_A/
-│   │   ├── proposal.md         # The direction described (includes feasibility scorecard)
-│   │   ├── literature_check.md # What existing work says about it
-│   │   └── criticism.md        # Adversarial self-critique (includes "what would save this?" for killed directions)
-│   └── summary.md          # Ranked comparison of all directions
+│   │   ├── proposal.md         # The direction described (includes feasibility scorecard) — by ideation agent
+│   │   ├── literature_check.md # What existing work says about it — by ideation agent
+│   │   └── criticism.md        # Adversarial critique (+ "what would save this?") — by critic agent (separate instance)
+│   └── summary.md          # Head-to-head ranked comparison — by ideation agent after critic reviews
 ├── math/                   # Derivations (LaTeX Markdown, produced by Gemini)
 ├── src/                    # Python code (NumPy/SciPy/SymPy)
 │   └── scripts/
-│       ├── arxiv_download.py   # Download PDFs from arxiv
-│       └── gemini_check.sh     # Pipe a file to Gemini for verification
+│       └── arxiv_download.py   # Download PDFs from arxiv
 ├── notes/
 │   ├── active_criticism.md     # Open issues (FATAL/HIGH/MEDIUM/SMALL) with unique IDs
 │   ├── edit_history.md         # Append-only log of all changes and fixes
@@ -44,11 +43,10 @@
 
 1. Fill in the Research Context above. Place any initial PDFs in `refs/`, code in `src/`.
 2. Invoke the ideation agent: `Use ideation agent to brainstorm directions for this research question`
-3. The agent will:
+3. The ideation agent will:
    - Search the literature via Scite MCP
    - Propose **at least 4** directions in `directions/option_X/` (3 is too few — aim for 5)
    - Perform a **literature reality check** per direction (has it been done? contradicted? trivial?)
-   - Self-criticize each direction adversarially
    - Cross-check with Gemini
    - For each direction, include a **feasibility scorecard**:
      - Mathematical difficulty (1-10)
@@ -56,26 +54,41 @@
      - Expected time to first result (weeks)
      - Probability of meaningful result (%)
    - For killed directions, include a **"What would save this?"** section documenting what would need to change for the direction to survive — prevents revisiting the same dead ends
-   - Write a ranked `directions/summary.md`
 4. **Brainstorm retrospective:** After initial directions are proposed, the agent does a second pass: "Given the directions we proposed, what other angles did we miss?" This guards against tunnel vision from the initial literature search framing.
-5. Read `directions/summary.md`. Read individual `proposal.md` and `criticism.md` files as needed.
-6. Tell Claude which direction to develop (or combine elements from multiple).
+5. Invoke the **critic agent** to adversarially review each direction: `Use critic agent to review directions/option_X/proposal.md`. The critic — a separate Opus instance with no ownership of the ideas — writes `directions/option_X/criticism.md`. This separation prevents the proposer from going easy on its own ideas.
+6. The ideation agent then writes `directions/summary.md` with **head-to-head comparisons**: every pair of surviving directions is compared directly ("Given A and B, which has a stronger testable prediction and fewer fatal assumptions?"). Directions are ranked by win count, not subjective ordering.
+7. Read `directions/summary.md`. Read individual `proposal.md` and `criticism.md` files as needed.
+8. Tell Claude which direction to develop (or combine elements from multiple).
 
 ### Phase 2 — Development
 
-1. The main session (Opus) reads the chosen direction and writes `notes/plan.md` with numbered tasks.
+1. The main session (Opus) reads the chosen direction and writes `notes/plan.md` with numbered tasks. Each task is marked `[TODO]`, `[IN PROGRESS]`, or `[DONE]`.
 2. Tasks are dispatched by type:
-   - **Derivations** → Gemini CLI. The main session pipes a task prompt to Gemini, saves output to `math/`.
-   - **Code** → `developer` agent (Sonnet). Implements in `src/`. Must be runnable and tested.
-   - **Writing** → `developer` agent (Sonnet). Drafts report sections in `report/`.
-3. After each piece of work, the `critic` agent reviews it (writes to `notes/active_criticism.md`).
+   - **`[DERIVE]`** → Gemini CLI. The main session pipes a task prompt to Gemini, saves output to `math/`.
+   - **`[CODE]`** → `developer` agent (Sonnet). Implements in `src/`. Must be runnable and tested.
+   - **`[VERIFY]`** → Mandatory after any `[CODE]` task that produces a numerical result. Runs the same computation a different way (analytical limit, independent implementation, or parameter sweep). The critic agent flags any numerical result without a corresponding `[VERIFY]` as HIGH.
+   - **`[WRITE]`** → `developer` agent (Sonnet). Drafts report sections in `report/`.
+   - **`[LIT]`** → `literature` agent. Searches for and verifies claims against published work.
+3. After each piece of work, the `critic` agent reviews it (writes to `notes/active_criticism.md`). The critic **automatically invokes the literature agent** for any non-trivial quantitative claim before rating it — literature verification is in-the-loop, not optional.
 4. The criticism loop runs until no FATAL or HIGH issues remain:
    ```
-   work produced → critic reviews → issues logged → fixes dispatched
-   → critic re-reviews → issues marked resolved → repeat
+   work produced → critic reviews (with literature checks) → issues logged
+   → fixes dispatched → critic re-reviews → issues marked resolved → repeat
    ```
-5. The `literature` agent is invoked whenever a claim needs verification against published work.
+5. **Convergence tracking:** After each critic pass, a score line is appended to `notes/active_criticism.md`:
+   ```
+   ## Score: [date] — FATAL: N, HIGH: N, MEDIUM: N, SMALL: N
+   ```
+   If FATAL+HIGH is not monotonically decreasing after 3 cycles, stop and reconsider the approach — the current direction may have a structural problem.
 6. All changes are logged in `notes/edit_history.md`.
+
+### Resuming a Session
+
+When resuming Phase 2 after a session break:
+1. Read `notes/plan.md` — check task statuses (`[TODO]`, `[IN PROGRESS]`, `[DONE]`).
+2. Read `notes/active_criticism.md` — check open issues and the score curve.
+3. Read `notes/edit_history.md` — understand what was already done.
+4. Resume from the first `[TODO]` or `[IN PROGRESS]` task. Any `[IN PROGRESS]` task should be re-evaluated — it may be partially complete.
 
 ---
 
@@ -83,8 +96,9 @@
 
 | Agent | Model | Role |
 |-------|-------|------|
-| `ideation` | Opus | Brainstorm + literature check + self-criticize research directions |
-| `critic` | Opus | Hostile referee. Finds real flaws. Searches literature. Cross-checks with Gemini. |
+| `ideation` | Opus | Brainstorm + literature check research directions, hand off to critic, write ranked summary |
+| `critic` | Opus | Hostile referee. Finds real flaws. Literature-in-the-loop. Dispatches verify-math. |
+| `verify-math` | Sonnet | Cross-model math verification. Tries Gemini, falls back to independent Sonnet check. |
 | `developer` | Sonnet | Code (src/) and writing (report/) tasks only |
 | `literature` | Sonnet | Search Scite/bioRxiv, download arxiv papers |
 
@@ -92,13 +106,19 @@
 
 ## External Tools
 
-**Gemini CLI** (primary derivation engine + math verifier):
+**Gemini CLI** (primary derivation engine):
 ```bash
 cat math/task.md | gemini -p "Derive..."
-cat math/result.md | bash src/scripts/gemini_check.sh -
 ```
 - Gemini is strong at mathematics and cheap — use it freely.
 - One self-contained prompt per call. No multi-turn. If a derivation is too long for one prompt, break it into independent steps.
+- **Fallback:** If Gemini CLI is not available, use a `developer` agent (Sonnet) for derivations instead.
+
+**`verify-math` agent** (cross-model math verification):
+- Dispatched to verify any derivation or mathematical claim.
+- Tries Gemini CLI first, falls back to independent Sonnet verification.
+- Returns structured report: dimensional consistency, signs, limiting cases, approximations.
+- Use instead of calling Gemini directly for verification — handles fallback automatically.
 
 **Scite MCP** (`search_literature`):
 - Peer-reviewed papers with Smart Citations (actual quoted text).
@@ -146,7 +166,11 @@ Saves PDF to `refs/`.
 
 ### SMALL
 - [ ] [C-004] Description.
+
+## Score: [date] — FATAL: N, HIGH: N, MEDIUM: N, SMALL: N
 ```
+
+The score line is appended after every critic pass. If FATAL+HIGH is not monotonically decreasing after 3 cycles, the approach has a structural problem — stop and reconsider.
 
 ### `notes/edit_history.md` — append-only audit trail
 

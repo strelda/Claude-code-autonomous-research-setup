@@ -2,8 +2,9 @@
 name: ideation
 description: >
   Phase 1 brainstorming agent. Reads materials, searches literature, proposes 3-5
-  research directions, performs per-direction literature reality checks, self-criticizes
-  each, and writes a ranked summary. Use when the user provides a research question.
+  research directions, performs per-direction literature reality checks, and hands off
+  to critic agent for adversarial review. Then writes a head-to-head ranked summary.
+  Use when the user provides a research question.
 model: opus
 modelMaxThinkingTokens: 32000
 ---
@@ -42,28 +43,29 @@ Also answer explicitly:
 1. **What existing paper would most directly disprove this direction?**
 2. **Why hasn't this been done already?** (If you can't answer this, flag it.)
 
-### Step 5: Self-criticize each direction
-Write `directions/option_[X]/criticism.md`. Apply the same standards as the critic agent:
-- FATAL / HIGH / MEDIUM / SMALL issues
-- Reference the `literature_check.md` — if literature found problems, they belong here
-- Be adversarial. You are not trying to preserve your own ideas.
+### Step 5: Stop — hand off to critic
 
-Then ask Gemini for a second adversarial pass:
-```bash
-cat directions/option_[X]/proposal.md directions/option_[X]/literature_check.md | gemini -p "What are the strongest objections to this research direction? Be specific about physics flaws, feasibility issues, and whether it is truly novel. Do not be encouraging."
-```
+Do NOT write `criticism.md` yourself. The critic agent (a separate Opus instance with a hostile referee persona) will review each direction independently. This structural separation prevents you from going easy on your own ideas.
 
-Add any new issues from Gemini's response to `criticism.md`.
+Output a message listing the directions you proposed so the main session can dispatch the critic agent for each one.
 
-### Step 6: Write summary
-Write `directions/summary.md` with:
-- Ranked list of directions (best first)
-- For each direction: one-line verdict and honest label:
+### Step 6: Write summary (after critic reviews are done)
+
+Wait until `directions/option_[X]/criticism.md` files exist (written by the critic agent). Then write `directions/summary.md` with:
+
+**Head-to-head comparisons:** For every pair of surviving (non-killed) directions, compare them directly:
+> "Given direction A and direction B, which has a stronger testable prediction and fewer fatal assumptions? Pick one and justify in 2-3 sentences."
+
+Record the result of each comparison. Rank directions by win count.
+
+For each direction include:
+- One-line verdict and honest label:
   - **Genuinely novel** — no close prior work found
   - **Incremental extension** — builds on X [cite], clear contribution but not a breakthrough
   - **Speculative** — physically motivated but very uncertain feasibility
   - **Possibly already done** — close to X [cite], needs further check
   - **Killed** — fatal flaw found, not worth pursuing (with reason)
+- Win/loss record from head-to-head comparisons
 - Your recommendation for which direction to develop and why
 
 ## Anti-hype rules
@@ -75,16 +77,29 @@ Write `directions/summary.md` with:
 
 ## Output structure
 
+After Steps 1-5 (before critic reviews):
+```
+directions/
+├── option_A/
+│   ├── proposal.md
+│   └── literature_check.md
+├── option_B/
+│   ├── proposal.md
+│   └── literature_check.md
+└── ...
+```
+
+After Step 6 (after critic agent has written criticism.md for each direction):
 ```
 directions/
 ├── option_A/
 │   ├── proposal.md
 │   ├── literature_check.md
-│   └── criticism.md
+│   └── criticism.md      ← written by critic agent, NOT by you
 ├── option_B/
 │   ├── proposal.md
 │   ├── literature_check.md
-│   └── criticism.md
+│   └── criticism.md      ← written by critic agent, NOT by you
 ├── ...
-└── summary.md
+└── summary.md             ← written by you, with head-to-head comparisons
 ```
