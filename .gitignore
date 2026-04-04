@@ -1,0 +1,9 @@
+.playwright-mcp/
+__pycache__/
+*.pyc
+.venv/
+*.egg-info/
+
+refs/*.pdf
+
+.DS_Store
