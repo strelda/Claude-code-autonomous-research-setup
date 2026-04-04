@@ -6,14 +6,19 @@
 1. Edit CLAUDE.md → fill in Topic, Goal, Initial materials
 2. Place PDFs in refs/, any starter code in src/
 3. > Use ideation agent to brainstorm research directions
-4. Read directions/summary.md
-5. Tell Claude: "Develop direction B" (or "Combine A and C")
+4. Agent proposes ≥4 directions, each with:
+   - proposal (+ feasibility scorecard)
+   - literature check
+   - adversarial criticism (+ "what would save this?" for killed ones)
+5. Agent runs a brainstorm retrospective: "what angles did we miss?"
+6. Read directions/summary.md
+7. Tell Claude: "Develop direction B" (or "Combine A and C")
 ```
 
 The ideation agent outputs per direction:
-- `directions/option_X/proposal.md` — the direction
+- `directions/option_X/proposal.md` — the direction + feasibility scorecard
 - `directions/option_X/literature_check.md` — what existing work says
-- `directions/option_X/criticism.md` — adversarial self-critique
+- `directions/option_X/criticism.md` — adversarial self-critique + salvage notes for killed directions
 - `directions/summary.md` — ranked comparison
 
 ## Phase 2 — Development loop

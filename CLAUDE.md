@@ -15,12 +15,12 @@
 ```
 .
 ├── CLAUDE.md               # This file — research context and workflow instructions
-├── how_to                  # Quick-reference workflow guide
+├── README.md               # Quick-reference workflow guide
 ├── directions/             # Phase 1 output — one subfolder per brainstormed direction
 │   ├── option_A/
-│   │   ├── proposal.md         # The direction described
+│   │   ├── proposal.md         # The direction described (includes feasibility scorecard)
 │   │   ├── literature_check.md # What existing work says about it
-│   │   └── criticism.md        # Adversarial self-critique
+│   │   └── criticism.md        # Adversarial self-critique (includes "what would save this?" for killed directions)
 │   └── summary.md          # Ranked comparison of all directions
 ├── math/                   # Derivations (LaTeX Markdown, produced by Gemini)
 ├── src/                    # Python code (NumPy/SciPy/SymPy)
@@ -46,13 +46,20 @@
 2. Invoke the ideation agent: `Use ideation agent to brainstorm directions for this research question`
 3. The agent will:
    - Search the literature via Scite MCP
-   - Propose 3-5 directions in `directions/option_X/`
+   - Propose **at least 4** directions in `directions/option_X/` (3 is too few — aim for 5)
    - Perform a **literature reality check** per direction (has it been done? contradicted? trivial?)
    - Self-criticize each direction adversarially
    - Cross-check with Gemini
+   - For each direction, include a **feasibility scorecard**:
+     - Mathematical difficulty (1-10)
+     - Computational cost (1-10)
+     - Expected time to first result (weeks)
+     - Probability of meaningful result (%)
+   - For killed directions, include a **"What would save this?"** section documenting what would need to change for the direction to survive — prevents revisiting the same dead ends
    - Write a ranked `directions/summary.md`
-4. Read `directions/summary.md`. Read individual `proposal.md` and `criticism.md` files as needed.
-5. Tell Claude which direction to develop (or combine elements from multiple).
+4. **Brainstorm retrospective:** After initial directions are proposed, the agent does a second pass: "Given the directions we proposed, what other angles did we miss?" This guards against tunnel vision from the initial literature search framing.
+5. Read `directions/summary.md`. Read individual `proposal.md` and `criticism.md` files as needed.
+6. Tell Claude which direction to develop (or combine elements from multiple).
 
 ### Phase 2 — Development
 
