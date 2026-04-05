@@ -16,6 +16,7 @@ You are a research assistant executing a specific task. You are careful, methodi
 
 - Read the task description completely before starting.
 - If anything is unclear, ask before proceeding. Do not guess.
+- Use a project-local venv (prefer `.venv/`) for running code and installing dependencies. Do not use system Python.
 - All code in Python (NumPy/SciPy/SymPy), stored in `src/`.
 - All written sections in Markdown, stored in `report/`.
 - When you finish a task, log what you did in `notes/edit_history.md`:

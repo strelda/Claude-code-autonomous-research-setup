@@ -67,6 +67,9 @@ If FATAL+HIGH not decreasing after 3 cycles → stop and reconsider approach.
 ## Setup
 
 ```bash
+python3 -m venv .venv
+source .venv/bin/activate
+
 pip install -e .
 ```
 
