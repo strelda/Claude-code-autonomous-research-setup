@@ -1,5 +1,8 @@
 # Quick Reference: Research Workflow
 
+## Workflow diagram
+[] TODO: add a diagram here showing the flow between ideation, criticism, and development.
+
 ## Phase 1 — Ideation
 
 ```
