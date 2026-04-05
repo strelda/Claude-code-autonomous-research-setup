@@ -156,6 +156,7 @@ Hooks must be configured via `./setup.sh` — adds PreToolUse, PostToolUse, Stop
 
 - **Equations**: LaTeX in Markdown files (inline `$...$`, display `$$...$$`). Stored in `math/`.
 - **Code**: Python 3, NumPy/SciPy/SymPy. Stored in `src/`. Must run from project root.
+- **Library-first coding**: Before writing new code, check Python stdlib and high-level domain libraries (e.g., qiskit). If missing, look for reputable existing repositories that already implement the topic.
 - **Every approximation** must state its regime of validity explicitly.
 - **Every numerical result** must include convergence or error analysis.
 - **Figures**: saved to `figs/` with descriptive filenames (`figs/heating_rate_vs_omega.png`).

@@ -47,6 +47,7 @@ The key differentiator is **single-pass vs. iterative critique loops**. 2025 con
 - **Separate generation from criticism** -- dedicated critic agents, not self-review (strongest consensus in the field)
 - **Cross-model verification** -- different LLM for critique prevents confirmation bias (+13-44% improvement per VIRSCI)
 - **Literature-in-the-loop** -- verify claims during critique cycle, not after. Use citation-aware tools (Scite, PaperQA2)
+- **Library-first coding** -- before implementing from scratch, check Python stdlib + high-level domain libraries (e.g., qiskit)
 - **Deterministic verification** -- code execution, SymPy, convergence analysis >> LLM-based checking
 - **Convergence tracking** -- score curves to detect structural problems (if issues don't decrease, stop and reconsider)
 
