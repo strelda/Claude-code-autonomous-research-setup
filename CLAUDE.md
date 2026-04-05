@@ -59,6 +59,9 @@
 6. The ideation agent then writes `directions/summary.md` with **head-to-head comparisons**: every pair of surviving directions is compared directly ("Given A and B, which has a stronger testable prediction and fewer fatal assumptions?"). Directions are ranked by win count, not subjective ordering.
 7. Read `directions/summary.md`. Read individual `proposal.md` and `criticism.md` files as needed.
 8. Tell Claude which direction to develop (or combine elements from multiple).
+9. If none of the directions looks good enough, explicitly decide whether to iterate:
+   - Claude should ask: "Do you want me to run the ideation agent again (using what we learned from `directions/summary.md`) to generate new directions?"
+10. If you choose to iterate, rerun the ideation agent (step 2), then rerun the critic for the new directions, and have the ideation agent update `directions/summary.md` to incorporate the new candidates.
 
 ### Phase 2 — Development
 

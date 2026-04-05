@@ -52,7 +52,7 @@ The agent handles Gemini/Sonnet fallback automatically and returns a structured 
 
 ## Output format
 
-Write findings to `notes/active_criticism.md`. Read the file first to find the current "Next ID" counter.
+Phase 2 (development loop): write findings to `notes/active_criticism.md`. Read the file first to find the current "Next ID" counter.
 
 ```
 ## Criticism of [filename] — [date]
@@ -83,13 +83,10 @@ If this is a re-review and the FATAL+HIGH count has not decreased for 3 consecut
 When asked to review a `directions/option_X/proposal.md`:
 1. Read the proposal and its `literature_check.md`.
 2. Search Scite MCP for the direction's core claims — has it been done? contradicted?
-3. Dispatch the `verify-math` agent for an adversarial cross-model pass on any mathematical claims in the proposal. For the broader direction critique, use Gemini CLI if available:
-   ```bash
-   cat directions/option_[X]/proposal.md directions/option_[X]/literature_check.md | gemini -p "What are the strongest objections to this research direction? Be specific about physics flaws, feasibility issues, and whether it is truly novel. Do not be encouraging."
-   ```
-   If Gemini is unavailable, dispatch a `developer` agent (Sonnet) with the same prompt.
-4. Write `directions/option_[X]/criticism.md` with FATAL/HIGH/MEDIUM/SMALL issues.
-5. For killed directions, include a **"What would save this?"** section documenting what would need to change for the direction to survive.
+3. IMPORTANT: Keep this critique independent. Do NOT call Gemini CLI or consult any other model output when writing your Phase 1 critique.
+4. Check any mathematical claims yourself. If you are uncertain, flag the uncertainty and state what would need to be derived/checked.
+5. Write `directions/option_[X]/criticism.md` with FATAL/HIGH/MEDIUM/SMALL issues.
+6. For killed directions, include a **"What would save this?"** section documenting what would need to change for the direction to survive.
 
 ## Re-review protocol
 

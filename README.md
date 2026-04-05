@@ -6,15 +6,19 @@
 1. Edit CLAUDE.md → fill in Topic, Goal, Initial materials
 2. Place PDFs in refs/, any starter code in src/
 3. > Use ideation agent to brainstorm research directions
+  (This single ideation-agent run is expected to produce steps 4 and 7.)
 4. Ideation agent proposes ≥4 directions, each with:
    - proposal (+ feasibility scorecard)
    - literature check
 5. > Use critic agent to review directions/option_X/proposal.md
-   (repeat for each direction — critic is a separate agent, not the proposer)
-6. Ideation agent writes summary with head-to-head comparisons
-7. Agent runs a brainstorm retrospective: "what angles did we miss?"
+   (repeat for each direction — critic is a separate agent, not the proposer), produces criticism.md with severity ratings + "what would save this?" for killed directions
+6. > Use ideation agent to write summary with head-to-head comparisons
+  (Run this after the critic reviews exist, so the summary can incorporate them.)
+7. (Part of the ideation-agent run) Brainstorm retrospective: "what angles did we miss?"
 8. Read directions/summary.md
-9. Tell Claude: "Develop direction B" (or "Combine A and C")
+9. If none of these ideas seems good, run ideation agent from step 3. again (with the knowledge from summary.md) to brainstorm another idea.
+10. Continue the rest of the steps above for this new idea and refine summary.md with the new idea and criticism.
+11. > Develop direction B (or "Combine A and C")
 ```
 
 The ideation agent outputs per direction:
