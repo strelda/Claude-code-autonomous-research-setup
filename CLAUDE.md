@@ -46,8 +46,10 @@
 3. The ideation agent will:
    - Search the literature via Scite MCP
    - Propose **at least 4** directions in `directions/option_X/` (3 is too few — aim for 5)
+   - Generate roughly half the directions with Claude Opus and half via Gemini CLI (pinned to `gemini-3.1-pro-preview`)
+   - Think about each idea separately and write candid notes to `directions/option_X/my_notes.md`
    - Perform a **literature reality check** per direction (has it been done? contradicted? trivial?)
-   - Cross-check with Gemini
+   - Cross-check with Gemini (Gemini CLI pinned to `gemini-3.1-pro-preview`)
    - For each direction, include a **feasibility scorecard**:
      - Mathematical difficulty (1-10)
      - Computational cost (1-10)
@@ -111,7 +113,7 @@ When resuming Phase 2 after a session break:
 
 **Gemini CLI** (primary derivation engine):
 ```bash
-cat math/task.md | gemini -p "Derive..."
+cat math/task.md | gemini -m gemini-3.1-pro-preview -p "Derive..."
 ```
 - Gemini is strong at mathematics and cheap — use it freely.
 - One self-contained prompt per call. No multi-turn. If a derivation is too long for one prompt, break it into independent steps.

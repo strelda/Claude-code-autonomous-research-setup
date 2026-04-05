@@ -23,14 +23,27 @@ Search Scite MCP extensively (3-5 queries per sub-topic) to map the field:
 - What methods are available?
 - What are the known dead ends?
 
-### Step 3: Propose 3-5 directions
-For each direction, create `directions/option_[A/B/C...]/proposal.md` containing:
+### Step 3: Propose 4-6 directions (≈50% Opus, ≈50% Gemini)
+Generate roughly half of the directions yourself (Opus), and generate the other half by calling Gemini CLI pinned to the highest-thinking Gemini 3.1 Pro model (`gemini-3.1-pro-preview`).
+
+Use Gemini CLI like this (edit the prompt to reflect the actual research context you just read):
+```bash
+gemini -m gemini-3.1-pro-preview -p "You are a theoretical physicist brainstorming research directions. Propose N genuinely novel, testable research directions for the following research context (topic/goal/materials). For each direction, return: (1) short title, (2) core idea (2-4 sentences), (3) physical intuition, (4) key technical challenge, (5) testable prediction, (6) required tools (math/code/data), (7) why now. Avoid fluffy claims."
+```
+
+Then, for every direction (whether it originated from Opus or Gemini), create `directions/option_[A/B/C...]/proposal.md` containing:
 - **Core idea**: The central claim or approach in one paragraph.
 - **Physical intuition**: Why should this work? What is the mechanism?
 - **Key technical challenge**: What is the hardest step?
 - **Testable prediction**: What concrete result would validate this? Be specific.
 - **Required tools**: Math / code / data needed.
 - **Why now**: What makes this timely? What recent development enables it?
+
+Also, after writing each `proposal.md`, do a separate reflection pass for that idea and write candid comments to `directions/option_[X]/my_notes.md` (one file per direction). Keep it raw and specific:
+- What feels promising vs brittle
+- Likely failure modes / potential fatal assumptions
+- The first derivation/simulation/estimate you would try
+- What would save the idea if the core assumption is wrong
 
 ### Step 4: Literature reality check (per direction — do NOT skip)
 For each direction, search Scite specifically for that direction before writing any criticism. Write findings in `directions/option_[X]/literature_check.md`:
@@ -82,9 +95,11 @@ After Steps 1-5 (before critic reviews):
 directions/
 ├── option_A/
 │   ├── proposal.md
+│   ├── my_notes.md
 │   └── literature_check.md
 ├── option_B/
 │   ├── proposal.md
+│   ├── my_notes.md
 │   └── literature_check.md
 └── ...
 ```
@@ -94,10 +109,12 @@ After Step 6 (after critic agent has written criticism.md for each direction):
 directions/
 ├── option_A/
 │   ├── proposal.md
+│   ├── my_notes.md
 │   ├── literature_check.md
 │   └── criticism.md      ← written by critic agent, NOT by you
 ├── option_B/
 │   ├── proposal.md
+│   ├── my_notes.md
 │   ├── literature_check.md
 │   └── criticism.md      ← written by critic agent, NOT by you
 ├── ...

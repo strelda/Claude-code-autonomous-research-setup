@@ -101,7 +101,7 @@ See `docs/ADR/001-observability-tool-selection.md` for why other tools were reje
 python3 src/scripts/arxiv_download.py 2301.12345
 
 # Derive with Gemini CLI (if available)
-cat math/task.md | gemini -p "Derive..."
+cat math/task.md | gemini -m gemini-3.1-pro-preview -p "Derive..."
 
 # Verify math — use the verify-math agent (handles Gemini/Sonnet fallback)
 # > Use verify-math agent to verify math/derivation.md
